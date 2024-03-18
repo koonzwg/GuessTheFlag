@@ -15,6 +15,11 @@ struct ContentView: View {
     @State private var userScore = 0
     @State private var questionCount = 0
     
+    @State private var selectedFlag = -1
+    @State private var rotateAnimation = 0.0
+    @State private var opacityAnimation = 1.0
+    @State private var scaleAnimation = 1.0
+    
     var body: some View {
         ZStack {
             RadialGradient(stops: [
@@ -38,12 +43,22 @@ struct ContentView: View {
                     
                     ForEach(0..<3) { number in
                         Button {
-                            flagTapped(number)
-                        } label: {
-                            Image(countries[number])
-                                .clipShape(.capsule)
-                                .shadow(radius: 5)
-                        }
+                                                    withAnimation {
+                                                        selectedFlag = number
+                                                        rotateAnimation += 360
+                                                        opacityAnimation = 0.25
+                                                        scaleAnimation = 0.8
+                                                    }
+                                                    
+                                                    flagTapped(number)
+                                                } label: {
+                                                    Image(countries[number])
+                                                        .clipShape(.capsule)
+                                                        .shadow(radius: 5)
+                                                        .rotation3DEffect(.degrees(selectedFlag == number ? rotateAnimation : 0), axis: (x: 0, y: 1, z: 0))
+                                                        .opacity(selectedFlag == -1 || selectedFlag == number ? 1 : opacityAnimation)
+                                                        .scaleEffect(selectedFlag == -1 || selectedFlag == number ? 1 : scaleAnimation)
+                                                }
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -102,9 +117,4 @@ struct ContentView: View {
             ContentView()
         }
     }
-    
-    
-    /*
-     
-     */
 }
